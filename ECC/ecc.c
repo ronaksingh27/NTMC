@@ -34,7 +34,7 @@ void point_clear(Point *P) {
 int point_equals(Point *P1, Point *P2) {
     if (P1->infinity && P2->infinity) return 1;  // Both points are at infinity
     if (P1->infinity || P2->infinity) return 0;  // One point is at infinity, the other is not
-    return (mpz_cmp(P1->x, P2->x) == 0 && (mpz_cmp(P1->y, P2->y) == 0));
+    return (mpz_cmp(P1->x, P2->x) == 0 && (mpz_cmp(P1->y, P2->y) == 0;
 }
 
 // Point addition: P3 = P1 + P2
@@ -143,19 +143,58 @@ void scalar_multiply(Point *Q, Point *P, mpz_t k, EllipticCurve *curve) {
     point_clear(&R);
 }
 
-// Generate a master key and compute the public key P_s = M_k * P
-void generate_master_key(mpz_t M_k, Point *P_s, Point *P, EllipticCurve *curve) {
-    // Generate a random master key M_k (0 < M_k < n)
+// System Setup Phase
+void system_setup(EllipticCurve *curve, Point *P, mpz_t M_k, Point *P_s) {
+    // Define the elliptic curve parameters (example: y^2 = x^3 + 2x + 3 mod 17)
+    mpz_init_set_ui(curve->a, 2);
+    mpz_init_set_ui(curve->b, 3);
+    mpz_init_set_ui(curve->p, 17);
+    mpz_init_set_ui(curve->n, 19);  // Order of the base point P
+
+    // Initialize the base point P = (5, 1)
+    point_init(P);
+    mpz_set_ui(P->x, 5);
+    mpz_set_ui(P->y, 1);
+    P->infinity = 0;
+
+    // Generate the master key M_k (0 < M_k < n)
     gmp_randstate_t state;
     gmp_randinit_default(state);
     mpz_urandomm(M_k, state, curve->n);  // M_k is a random number < n
     gmp_randclear(state);
 
-    // Compute P_s = M_k * P
+    // Compute the public key P_s = M_k * P
+    point_init(P_s);
     scalar_multiply(P_s, P, M_k, curve);
 }
 
-// Assign private and public keys to a smart meter
+// Publish the system parameters
+void publish_system_parameters(EllipticCurve *curve, Point *P, Point *P_s) {
+    printf("Elliptic Curve Parameters:\n");
+    printf("a = ");
+    mpz_out_str(stdout, 10, curve->a);
+    printf("\nb = ");
+    mpz_out_str(stdout, 10, curve->b);
+    printf("\np = ");
+    mpz_out_str(stdout, 10, curve->p);
+    printf("\nn = ");
+    mpz_out_str(stdout, 10, curve->n);
+    printf("\n");
+
+    printf("Base Point P: (");
+    mpz_out_str(stdout, 10, P->x);
+    printf(", ");
+    mpz_out_str(stdout, 10, P->y);
+    printf(")\n");
+
+    printf("Public Key P_s: (");
+    mpz_out_str(stdout, 10, P_s->x);
+    printf(", ");
+    mpz_out_str(stdout, 10, P_s->y);
+    printf(")\n");
+}
+
+// Registration Phase: Assign private and public keys to a smart meter
 void assign_sm_keys(mpz_t SM_pri, Point *SM_pub, mpz_t M_k, Point *P, EllipticCurve *curve, const char *SM_ID) {
     // Compute sigma_j = H(SM_ID)
     mpz_t sigma_j;
@@ -177,37 +216,19 @@ void assign_sm_keys(mpz_t SM_pri, Point *SM_pub, mpz_t M_k, Point *P, EllipticCu
 }
 
 int main() {
-    // Initialize the elliptic curve (example: y^2 = x^3 + 2x + 3 mod 17)
+    // Initialize the elliptic curve, base point, master key, and public key
     EllipticCurve curve;
-    mpz_init_set_ui(curve.a, 2);
-    mpz_init_set_ui(curve.b, 3);
-    mpz_init_set_ui(curve.p, 17);
-    mpz_init_set_ui(curve.n, 19);  // Order of the base point P
-
-    // Initialize the base point P = (5, 1)
-    Point P;
-    point_init(&P);
-    mpz_set_ui(P.x, 5);
-    mpz_set_ui(P.y, 1);
-    P.infinity = 0;
-
-    // Generate the master key and compute the public key P_s
+    Point P, P_s;
     mpz_t M_k;
     mpz_init(M_k);
-    Point P_s;
-    point_init(&P_s);
-    generate_master_key(M_k, &P_s, &P, &curve);
 
-    // Print the master key and public key
-    printf("Master Key (M_k): ");
-    mpz_out_str(stdout, 10, M_k);
-    printf("\nPublic Key (P_s): (");
-    mpz_out_str(stdout, 10, P_s.x);
-    printf(", ");
-    mpz_out_str(stdout, 10, P_s.y);
-    printf(")\n");
+    // Perform the system setup phase
+    system_setup(&curve, &P, M_k, &P_s);
 
-    // Assign private and public keys to a smart meter
+    // Publish the system parameters
+    publish_system_parameters(&curve, &P, &P_s);
+
+    // Registration Phase: Assign private and public keys to a smart meter
     mpz_t SM_pri;
     mpz_init(SM_pri);
     Point SM_pub;
