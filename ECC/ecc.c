@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <gmp.h>
 #include <string.h>
+#include <openssl/sha.h>  // OpenSSL for SHA-256
 
 // Define the elliptic curve parameters (y^2 = x^3 + ax + b mod p)
 typedef struct {
@@ -194,13 +195,24 @@ void publish_system_parameters(EllipticCurve *curve, Point *P, Point *P_s) {
     printf(")\n");
 }
 
+// Hash function using OpenSSL's SHA-256
+void hash_sha256(const char *input, size_t input_len, unsigned char *output) {
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, input, input_len);
+    SHA256_Final(output, &sha256);
+}
+
 // Registration Phase: Assign private and public keys to a smart meter
 void assign_sm_keys(mpz_t SM_pri, Point *SM_pub, mpz_t M_k, Point *P, EllipticCurve *curve, const char *SM_ID) {
-    // Compute sigma_j = H(SM_ID)
+    // Compute sigma_j = H(SM_ID) using SHA-256
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    hash_sha256(SM_ID, strlen(SM_ID), hash);
+
+    // Convert the hash to an integer (sigma_j)
     mpz_t sigma_j;
     mpz_init(sigma_j);
-    mpz_set_str(sigma_j, SM_ID, 10);  // For simplicity, use SM_ID as sigma_j
-    // In practice, use a cryptographic hash function like SHA-256
+    mpz_import(sigma_j, SHA256_DIGEST_LENGTH, 1, 1, 0, 0, hash);
 
     // Compute SM_pri = 1 / (M_k + sigma_j) mod n
     mpz_t temp;
