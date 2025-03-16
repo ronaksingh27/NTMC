@@ -3,7 +3,7 @@ CC = gcc
 
 # Directories (Fix the space issue by using quotes)
 SRC_DIR = utility
-SM_Setup_DIR = SM_Setup
+SM_Setup_DIR = SM_setup
 AUTH_DIR = AUTH\ AND\ KEY\ ESTB
 HEADERS_DIR = headers
 
@@ -14,7 +14,7 @@ CFLAGS = -I$(HEADERS_DIR)
 LIBS = -lgmp -lssl -lcrypto
 
 # Source Files (Common)
-COMMON_SRCS = $(SRC_DIR)/ecc_tility.c $(SRC_DIR)/encrypt_utility.c $(SRC_DIR)/hash_utility.c
+COMMON_SRCS = $(SRC_DIR)/ecc_utility.c $(SRC_DIR)/encrypt_utility.c $(SRC_DIR)/hash_utility.c
 
 # Source Files for Different Programs
 SM_Setup_SRCS = $(SM_Setup_DIR)/main.c $(COMMON_SRCS)
