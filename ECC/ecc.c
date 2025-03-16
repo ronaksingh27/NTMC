@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <gmp.h>
 #include <string.h>
+#include "../headers/ecc_utility.h"
+#include "../headers/hash_utility.h"
+#include "../headers/encrypt_utility.h"
+
 
 // System Setup Phase
 void system_setup(EllipticCurve *curve, Point *P, mpz_t M_k, Point *P_s) {
@@ -51,14 +55,6 @@ void publish_system_parameters(EllipticCurve *curve, Point *P, Point *P_s) {
     printf(", ");
     mpz_out_str(stdout, 10, P_s->y);
     printf(")\n");
-}
-
-// Hash function using OpenSSL's SHA-256
-void hash_sha256(const char *input, size_t input_len, unsigned char *output) {
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, input, input_len);
-    SHA256_Final(output, &sha256);
 }
 
 // Registration Phase: Assign private and public keys to a smart meter

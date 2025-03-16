@@ -1,3 +1,5 @@
+#include "../headers/encrypt_utility.h"
+
 // AES encryption using OpenSSL
 void aes_encrypt(const unsigned char *plaintext, size_t plaintext_len, const unsigned char *key, unsigned char *ciphertext) {
     AES_KEY aes_key;

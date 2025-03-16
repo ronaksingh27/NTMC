@@ -1,12 +1,7 @@
 #ifndef ECC_UTILITY_H
 #define ECC_UTILITY_H
 
-#include <stdio.h>
 #include <gmp.h>
-#include <string.h>
-#include <openssl/sha.h>  // OpenSSL for SHA-256
-#include <openssl/aes.h>  // OpenSSL for AES encryption
-#include <openssl/hmac.h> //OpenSSL for HMAC
 
 // Define the elliptic curve parameters (y^2 = x^3 + ax + b mod p)
 typedef struct {

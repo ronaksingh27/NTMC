@@ -1,3 +1,5 @@
+#include "../headers/hash_utility.h"
+
 // Hash function using OpenSSL's SHA-256
 void hash_sha256(const char *input, size_t input_len, unsigned char *output) {
     SHA256_CTX sha256;

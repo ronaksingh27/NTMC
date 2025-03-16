@@ -1,3 +1,5 @@
+#include "../headers/ecc_utility.h"
+
 // Initialize a point
 void point_init(Point *P) {
     mpz_init(P->x);
