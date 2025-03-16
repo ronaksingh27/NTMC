@@ -204,7 +204,7 @@ void hash_sha256(const char *input, size_t input_len, unsigned char *output) {
 }
 
 // Registration Phase: Assign private and public keys to a smart meter
-void assign_sm_keys(mpz_t SM_pri, Point *SM_pub, mpz_t M_k, Point *P, EllipticCurve *curve, const char *SM_ID) {
+void assign_sm_keys(mpz_t SM_pri, Point *SM_pub, mpz_t M_k, Point *P, EllipticCurve *curve, const char *SM_ID, mpz_t ST_j, mpz_t id_ST_j) {
     // Compute sigma_j = H(SM_ID) using SHA-256
     unsigned char hash[SHA256_DIGEST_LENGTH];
     hash_sha256(SM_ID, strlen(SM_ID), hash);
@@ -224,8 +224,17 @@ void assign_sm_keys(mpz_t SM_pri, Point *SM_pub, mpz_t M_k, Point *P, EllipticCu
     mpz_add(temp, sigma_j, M_k);
     scalar_multiply(SM_pub, P, temp, curve);
 
+    // Generate the secret token ST_j and its identifier id_ST_j
+    gmp_randstate_t state;
+    gmp_randinit_default(state);
+    mpz_urandomm(ST_j, state, curve->n);  // ST_j is a random number < n
+    mpz_urandomm(id_ST_j, state, curve->n);  // id_ST_j is a random number < n
+    gmp_randclear(state);
+
     mpz_clears(sigma_j, temp, NULL);
 }
+
+
 
 int main() {
     // Initialize the elliptic curve, base point, master key, and public key
@@ -246,7 +255,14 @@ int main() {
     Point SM_pub;
     point_init(&SM_pub);
     const char *SM_ID = "12345";  // Example SM identity
-    assign_sm_keys(SM_pri, &SM_pub, M_k, &P, &curve, SM_ID);
+
+    // Initialize the secret token ST_j and its identifier id_ST_j
+    mpz_t ST_j, id_ST_j;
+    mpz_init(ST_j);
+    mpz_init(id_ST_j);
+
+    // Assign keys and generate the secret token
+    assign_sm_keys(SM_pri, &SM_pub, M_k, &P, &curve, SM_ID, ST_j, id_ST_j);
 
     // Print the SM's private and public keys
     printf("SM Private Key (SM_pri): ");
@@ -257,8 +273,15 @@ int main() {
     mpz_out_str(stdout, 10, SM_pub.y);
     printf(")\n");
 
+    // Print the secret token and its identifier
+    printf("Secret Token (ST_j): ");
+    mpz_out_str(stdout, 10, ST_j);
+    printf("\nToken Identifier (id_ST_j): ");
+    mpz_out_str(stdout, 10, id_ST_j);
+    printf("\n");
+
     // Clean up
-    mpz_clears(curve.a, curve.b, curve.p, curve.n, M_k, SM_pri, NULL);
+    mpz_clears(curve.a, curve.b, curve.p, curve.n, M_k, SM_pri, ST_j, id_ST_j, NULL);
     point_clear(&P);
     point_clear(&P_s);
     point_clear(&SM_pub);
