@@ -3,7 +3,7 @@ CC = gcc
 
 # Directories (Fix the space issue by using quotes)
 SRC_DIR = utility
-ECC_DIR = ECC
+ECC_DIR = Phase_A_B
 AUTH_DIR = AUTH\ AND\ KEY\ ESTB
 HEADERS_DIR = headers
 
@@ -17,7 +17,7 @@ LIBS = -lgmp -lssl -lcrypto
 COMMON_SRCS = $(SRC_DIR)/ecc_utility.c $(SRC_DIR)/encrypt_utility.c $(SRC_DIR)/hash_utility.c
 
 # Source Files for Different Programs
-ECC_SRCS = $(ECC_DIR)/ecc.c $(COMMON_SRCS)
+ECC_SRCS = $(ECC_DIR)/main.c $(COMMON_SRCS)
 PARTA_SRCS = $(AUTH_DIR)/partA.c $(COMMON_SRCS)
 
 # Output Executables
