@@ -3,7 +3,7 @@ CC = gcc
 
 # Directories (Fix the space issue by using quotes)
 SRC_DIR = utility
-ECC_DIR = Phase_A_B
+SM_Setup_DIR = SM_Setup
 AUTH_DIR = AUTH\ AND\ KEY\ ESTB
 HEADERS_DIR = headers
 
@@ -14,22 +14,22 @@ CFLAGS = -I$(HEADERS_DIR)
 LIBS = -lgmp -lssl -lcrypto
 
 # Source Files (Common)
-COMMON_SRCS = $(SRC_DIR)/ecc_utility.c $(SRC_DIR)/encrypt_utility.c $(SRC_DIR)/hash_utility.c
+COMMON_SRCS = $(SRC_DIR)/ecc_tility.c $(SRC_DIR)/encrypt_utility.c $(SRC_DIR)/hash_utility.c
 
 # Source Files for Different Programs
-ECC_SRCS = $(ECC_DIR)/main.c $(COMMON_SRCS)
+SM_Setup_SRCS = $(SM_Setup_DIR)/main.c $(COMMON_SRCS)
 PARTA_SRCS = $(AUTH_DIR)/partA.c $(COMMON_SRCS)
 
 # Output Executables
-ECC_TARGET = ecc_program
+SM_Setup_TARGET = SM_Setup_program
 PARTA_TARGET = partA_program
 
 # Default Rule (Compiles both)
-all: $(ECC_TARGET) $(PARTA_TARGET)
+all: $(SM_Setup_TARGET) $(PARTA_TARGET)
 
-# Compile ECC Program
-$(ECC_TARGET): $(ECC_SRCS)
-	$(CC) $(CFLAGS) -o $(ECC_TARGET) $(ECC_SRCS) $(LIBS)
+# Compile SM_Setup Program
+$(SM_Setup_TARGET): $(SM_Setup_SRCS)
+	$(CC) $(CFLAGS) -o $(SM_Setup_TARGET) $(SM_Setup_SRCS) $(LIBS)
 
 # Compile PartA Program
 $(PARTA_TARGET): $(PARTA_SRCS)
@@ -37,4 +37,4 @@ $(PARTA_TARGET): $(PARTA_SRCS)
 
 # Clean Rule
 clean:
-	rm -f $(ECC_TARGET) $(PARTA_TARGET)
+	rm -f $(SM_Setup_TARGET) $(PARTA_TARGET)
