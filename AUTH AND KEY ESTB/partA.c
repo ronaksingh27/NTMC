@@ -47,8 +47,10 @@ void sm_initiate_authentication(Point *A_SM_j, mpz_t u_SM_j, mpz_t L1, unsigned 
     // Step 7: Compute alpha = H(N_ID || phi) XOR id_ST_j || T1
     char alpha_input[1024];
     gmp_sprintf(alpha_input, "%s%Zd", N_ID, phi);  // Concatenate inputs
+    printf("NID_phi: %s\n",alpha_input);
     unsigned char alpha_hash[SHA256_DIGEST_LENGTH];
     hash_sha256(alpha_input, strlen(alpha_input), alpha_hash);
+    printf("H_NID_phi = %u\n",alpha_hash);
     mpz_t alpha_hash_int;
     mpz_init(alpha_hash_int);
     mpz_import(alpha_hash_int, SHA256_DIGEST_LENGTH, 1, 1, 0, 0, alpha_hash);  // Convert hash to integer
